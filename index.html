@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Avaliação de Maturidade</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
+      color: #e0f7fa;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      padding: 50px 20px 10px;
+    }
+
+    .logo {
+      max-width: 400px; /* LOGO MAIOR */
+      animation: pulse 3s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.07); opacity: 0.95; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    h1 {
+      text-align: center;
+      color: #00e5ff;
+      font-weight: 600;
+      text-shadow: none;
+    }
+
+    .intro {
+      text-align: center;
+      padding: 30px 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .intro p {
+      font-size: 1.2em;
+      line-height: 1.6;
+      color: #b2ebf2;
+    }
+
+    .highlight {
+      color: #ffeb3b;
+      font-weight: bold;
+    }
+
+    .cta-button {
+      margin-top: 40px;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      background-color: #00bcd4;
+      color: #0f2027;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #00bcd4;
+      transition: transform 0.3s ease;
+    }
+
+    .cta-button:hover {
+      transform: scale(1.05);
+      background-color: #26c6da;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="logo.png" alt="Logotipo" class="logo">
+  </header>
+
+  <section class="intro">
+    <h1>Avalie o seu nível de maturidade em cibersegurança</h1>
+
+    <p>
+      Em <span class="highlight">2025</span>, mais de 
+      <span class="highlight">50% das PME europeias sofreram ciberataques</span> — muitas sem saberem onde estavam vulneráveis.
+    </p>
+
+    <p>
+      Cada falha pode custar milhares de euros, reputação e até a continuidade do negócio.  
+      Avalie a maturidade da sua organização em normas como 
+      <span class="highlight">ISO 27001, NIS2, NIST CSF, DORA, CIS Controls</span> e outras.
+    </p>
+
+    <button class="cta-button" onclick="location.href='menu.html'">
+  Iniciar Avaliação
+</button>
+
+  </section>
+
+</body>
+</html>

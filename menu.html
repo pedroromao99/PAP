@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Escolha o Tipo de Análise</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
+      color: #e0f7fa;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px 10px;
+    }
+
+    .logo {
+      max-width: 260px;
+      animation: pulse 3s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.95; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    h1 {
+      text-align: center;
+      color: #00e5ff;
+      font-weight: 600;
+      text-shadow: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+      padding: 40px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 0 12px rgba(0, 188, 212, 0.2);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      background: rgba(0, 188, 212, 0.15);
+      box-shadow: 0 0 18px #00bcd4;
+    }
+
+    .card h2 {
+      color: #00e5ff;
+      margin-bottom: 10px;
+      text-shadow: 0 0 8px #00e5ff;
+    }
+
+    .card p {
+      color: #b2ebf2;
+      font-size: 0.95em;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <img src="logo.png" alt="Logotipo" class="logo" onclick="location.href='index.html'" style="cursor:pointer;">
+  </header>
+
+  <h1>Escolha o Tipo de Análise</h1>
+
+  <section class="grid">
+
+    <div class="card" onclick="location.href='iso27001.html'">
+      <h2>ISO 27001</h2>
+      <p>Avaliação completa do Sistema de Gestão de Segurança da Informação.</p>
+    </div>
+
+    <div class="card" onclick="location.href='nis2.html'">
+      <h2>NIS2</h2>
+      <p>Verifique o alinhamento com a nova diretiva europeia de cibersegurança.</p>
+    </div>
+
+
+  </section>
+
+</body>
+</html>

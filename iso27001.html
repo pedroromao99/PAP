@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Avaliação ISO 27001</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
+      color: #e0f7fa;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px 10px;
+    }
+
+    .logo {
+      max-width: 150px;
+      cursor: pointer;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.95; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+   h1, h2 {
+  text-align: center;
+  color: #00e5ff;
+  font-weight: 600;
+  text-shadow: none; /* remove brilho */
+}
+
+    .section {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      border-radius: 15px;
+      box-shadow: 0 0 12px rgba(0, 188, 212, 0.2);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      color: #b2ebf2;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: none;
+      background: black;
+      color: white;
+      border: 1px solid #00e5ff;
+    }
+
+    .question {
+      margin-top: 20px;
+    }
+
+    .cta-button {
+      display: block;
+      margin: 40px auto;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      background-color: #00bcd4;
+      color: #0f2027;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #00bcd4;
+      transition: transform 0.3s ease;
+    }
+
+    .cta-button:hover {
+      transform: scale(1.05);
+      background-color: #26c6da;
+    }
+
+    #results {
+      display: none;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <img src="logo.png" class="logo" onclick="location.href='index.html'">
+</header>
+
+<h1>Avaliação de Maturidade — ISO 27001</h1>
+
+<!-- ============================
+     SECÇÃO 1 — DADOS DA EMPRESA
+=============================== -->
+<div class="section">
+  <h2>Dados da Empresa</h2>
+
+  <label>Nome da Empresa</label>
+  <input type="text" id="empresa">
+
+  <label>Setor de Atividade</label>
+  <select id="setor">
+    <option value="Tecnologia">Tecnologia</option>
+    <option value="Saúde">Saúde</option>
+    <option value="Financeiro">Financeiro</option>
+    <option value="Indústria">Indústria</option>
+    <option value="Educação">Educação</option>
+    <option value="Serviços">Serviços</option>
+    <option value="Outro">Outro</option>
+  </select>
+
+  <label>Número de Colaboradores</label>
+  <select id="colaboradores">
+    <option value="1-10">1 - 10</option>
+    <option value="11-50">11 - 50</option>
+    <option value="51-200">51 - 200</option>
+    <option value="201-500">201 - 500</option>
+    <option value="500+">Mais de 500</option>
+  </select>
+
+  <label>Responsável pela Avaliação</label>
+  <input type="text" id="responsavel">
+</div>
+
+<!-- ============================
+     SECÇÃO 2 — QUESTIONÁRIO
+=============================== -->
+<div class="section">
+  <h2>Questionário ISO 27001</h2>
+
+  <p>Responda de 0 a 5, onde 0 = Não implementado e 5 = Totalmente implementado.</p>
+
+  <div id="perguntas"></div>
+</div>
+
+<button class="cta-button" onclick="calcularMaturidade()">Gerar Avaliação</button>
+
+<!-- ============================
+     SECÇÃO 3 — RESULTADOS
+=============================== -->
+<div id="results" class="section">
+  <h2>Resultados da Avaliação</h2>
+
+  <p id="score"></p>
+  <canvas id="grafico" style="max-width:600px;margin:auto;"></canvas>
+
+  <h3>Recomendações</h3>
+  <p id="recomendacoes"></p>
+  <button class="cta-button" onclick="gerarPDF()">Descarregar PDF</button>
+</div>
+
+<!-- ============================
+     JAVASCRIPT
+=============================== -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+<script>
+const perguntas = [
+  "A organização definiu claramente o contexto interno e externo?",
+  "As partes interessadas foram identificadas e analisadas?",
+  "A liderança demonstra compromisso com o SGSI?",
+  "Existe uma política de segurança formal e comunicada?",
+  "Existe um processo formal de gestão de riscos?",
+  "Os riscos são revistos periodicamente?",
+  "Existem controlos operacionais documentados?",
+  "Os colaboradores recebem formação em segurança?",
+  "Existem procedimentos de resposta a incidentes?",
+  "A organização monitoriza o desempenho do SGSI?",
+  "Auditorias internas são realizadas regularmente?",
+  "Existem ações corretivas documentadas?",
+  "A direção revê o SGSI anualmente?",
+  "Existem controlos do Anexo A implementados?",
+  "A organização promove melhoria contínua?"
+];
+
+// Domínios ISO 27001
+const dominios = {
+  "Contexto": [0,1],
+  "Liderança": [2,3],
+  "Riscos": [4,5],
+  "Operação": [6,7,8],
+  "Desempenho": [9,10,11],
+  "Direção": [12],
+  "Anexo A": [13],
+  "Melhoria": [14]
+};
+const fundoPretoPlugin = {
+  id: 'fundoPreto',
+  beforeDraw: (chart) => {
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, chart.width, chart.height);
+    ctx.restore();
+  }
+};
+let graficoRadar = null;
+
+// Renderizar perguntas
+const container = document.getElementById("perguntas");
+perguntas.forEach((p, i) => {
+  container.innerHTML += `
+    <div class="question">
+      <label>${i+1}. ${p}</label>
+      <select id="q${i}">
+        <option value="0">0 - Não implementado</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5 - Totalmente implementado</option>
+      </select>
+    </div>
+  `;
+});
+
+function calcularMaturidade() {
+  let respostas = [];
+  for (let i = 0; i < perguntas.length; i++) {
+    respostas.push(parseInt(document.getElementById("q" + i).value));
+  }
+
+  const media = respostas.reduce((a,b)=>a+b,0) / respostas.length;
+
+  document.getElementById("score").innerHTML =
+    "Pontuação média de maturidade: <strong>" + media.toFixed(2) + "/5</strong>";
+
+  // Cálculo por domínio
+  let resultadosDominios = {};
+  for (let dominio in dominios) {
+    const indices = dominios[dominio];
+    const valores = indices.map(i => respostas[i]);
+    const mediaDom = valores.reduce((a,b)=>a+b,0) / valores.length;
+    resultadosDominios[dominio] = mediaDom;
+  }
+
+  // Recomendações inteligentes
+  let recomendacoes = "<strong>Recomendações específicas:</strong><br><br>";
+
+  for (let dominio in resultadosDominios) {
+    const score = resultadosDominios[dominio];
+
+    if (score < 2) {
+      recomendacoes += `🔴 <strong>${dominio}</strong>: Maturidade muito baixa.  
+      • Implementar processos básicos imediatamente.<br>
+      • Criar documentação mínima obrigatória.<br>
+      • Definir responsáveis e métricas.<br><br>`;
+    }
+    else if (score < 3.5) {
+      recomendacoes += `🟠 <strong>${dominio}</strong>: Maturidade moderada.  
+      • Melhorar consistência e evidências.<br>
+      • Formalizar processos e revisões periódicas.<br>
+      • Reforçar formação e comunicação interna.<br><br>`;
+    }
+    else {
+      recomendacoes += `🟢 <strong>${dominio}</strong>: Bom nível.  
+      • Manter práticas atuais.<br>
+      • Reforçar monitorização e melhoria contínua.<br><br>`;
+    }
+  }
+
+  document.getElementById("recomendacoes").innerHTML = recomendacoes;
+
+  document.getElementById("results").style.display = "block";
+
+
+
+  // Criar gráfico
+  if (graficoRadar) graficoRadar.destroy();
+
+ graficoRadar = new Chart(document.getElementById("grafico"), {
+  type: 'radar',
+  data: {
+    labels: Object.keys(resultadosDominios),
+    datasets: [{
+      label: "Maturidade por Domínio",
+      data: Object.values(resultadosDominios),
+      backgroundColor: "rgba(0,188,212,0.3)",
+      borderColor: "#00e5ff",
+      borderWidth: 2
+    }]
+  },
+  options: {
+    scales: {
+      r: {
+        backgroundColor: 'rgba(0,0,0,1)',
+        pointLabels: {
+          color: '#ffffff', // letras dos domínios
+          font: { size: 14 }
+        },
+        angleLines: {
+          color: '#00bcd4'
+        },
+        grid: {
+          color: '#00bcd4'
+        },
+        ticks: {
+          color: '#ffffff',
+          backdropColor: 'transparent',
+          font: { size: 12 }
+        }
+      }
+    },
+    plugins:{
+      legend: {
+        labels: {
+          color: '#ffffff'
+        }
+      }
+    }
+  },
+  plugins: [fundoPretoPlugin]
+});
+}
+ 
+
+
+
+
+function gerarPDF() {
+  const empresa = document.getElementById("empresa").value || "—";
+  const setor = document.getElementById("setor").value || "—";
+  const colaboradores = document.getElementById("colaboradores").value || "—";
+  const responsavel = document.getElementById("responsavel").value || "—";
+  const scoreTexto = document.getElementById("score").innerText;
+  const recomendacoes = document.getElementById("recomendacoes").innerHTML;
+
+  const canvas = document.getElementById("grafico");
+  const graficoImg = canvas.toDataURL("image/png", 1.0);
+
+  const dataAtual = new Date().toLocaleDateString("pt-PT");
+
+  const estilo = `
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #2c3e50;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #0a3d62;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 20px;
+      color: #004d40;
+      margin-top: 40px;
+      border-bottom: 2px solid #00bcd4;
+      padding-bottom: 6px;
+    }
+
+    h3 {
+      font-size: 16px;
+      margin-top: 25px;
+      color: #006064;
+    }
+
+    p {
+      font-size: 12.5px;
+      line-height: 1.6;
+      margin: 8px 0;
+    }
+
+    .capa {
+      text-align: center;
+      margin-top: 150px;
+    }
+
+    .capa small {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .secao {
+      margin-bottom: 35px;
+    }
+
+    .linha {
+      border-bottom: 1px solid #ccc;
+      margin: 25px 0;
+    }
+
+    .grafico {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .recomendacao {
+      background: #f4f8fc;
+      border-left: 4px solid #00bcd4;
+      padding: 15px;
+      margin-bottom: 15px;
+      font-size: 12.5px;
+    }
+
+    .box {
+      background: #f9fbfd;
+      padding: 15px;
+      border: 1px solid #ddd;
+      margin-top: 15px;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .footer {
+      font-size: 10px;
+      color: #777;
+      margin-top: 50px;
+    }
+  </style>
+  `;
+
+  const html = `
+  ${estilo}
+
+  <!-- CAPA -->
+  <div class="capa">
+    <h1>Relatório de Avaliação de Maturidade</h1>
+    <h3>ISO/IEC 27001 — Sistema de Gestão da Segurança da Informação</h3>
+    <br><br>
+    <p><strong>Empresa:</strong> ${empresa}</p>
+    <p><strong>Responsável:</strong> ${responsavel}</p>
+    <p><strong>Data:</strong> ${dataAtual}</p>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- IDENTIFICAÇÃO -->
+  <div class="secao">
+    <h2>1. Identificação da Organização</h2>
+    <p><strong>Empresa:</strong> ${empresa}</p>
+    <p><strong>Setor de Atividade:</strong> ${setor}</p>
+    <p><strong>Número de Colaboradores:</strong> ${colaboradores}</p>
+    <p><strong>Responsável pela Avaliação:</strong> ${responsavel}</p>
+  </div>
+
+  <!-- RESUMO EXECUTIVO -->
+  <div class="secao">
+    <h2>2. Resumo Executivo</h2>
+    <div class="box">
+      <p>${scoreTexto}</p>
+      <p>
+        Esta avaliação fornece uma visão global do nível de maturidade do
+        Sistema de Gestão da Segurança da Informação (SGSI), com base
+        nos requisitos da norma ISO/IEC 27001.
+      </p>
+    </div>
+  </div>
+
+  <!-- GRÁFICO -->
+  <div class="secao grafico">
+    <h2>3. Maturidade por Domínio</h2>
+    <img src="${graficoImg}" style="max-width: 480px;">
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- RECOMENDAÇÕES -->
+  <div class="secao">
+    <h2>4. Recomendações</h2>
+    <div class="recomendacao">
+      ${recomendacoes}
+    </div>
+  </div>
+
+  <!-- NOTA METODOLÓGICA -->
+  <div class="secao">
+    <h2>5. Nota Metodológica</h2>
+    <p>
+      Esta avaliação baseia-se em respostas fornecidas pela organização e
+      não constitui uma auditoria formal de certificação.
+      Os resultados devem ser utilizados como apoio à tomada de decisão
+      e planeamento de melhorias.
+    </p>
+  </div>
+
+  <div class="footer">
+    Relatório gerado automaticamente — Avaliação NIS2
+  </div>
+  `;
+
+  const elemento = document.createElement("div");
+  elemento.innerHTML = html;
+
+  html2pdf().from(elemento).set({
+    margin: 15,
+    filename: 'Relatorio_Maturidade_ISO27001.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).save();
+}
+
+
+
+
+
+</script>
+
+
+</body>
+</html>
